@@ -128,7 +128,13 @@ class VendorController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        // Set status vendor dan user terkait menjadi 'deactive'
+        $vendor->update(['status' => 'deactive']);
+        $vendor->user()->update(['status' => 'deactive']);
+        
+        // Hapus vendor dan user terkait
+        $vendor->user()->delete();
         $vendor->delete();
-        return response()->json(['message' => 'Vendor deleted successfully'], 200);
+        return response()->json(['message' => 'Vendor and associated user deleted successfully'], 200);
     }
 }
