@@ -20,7 +20,8 @@ class Login extends Controller
         // check user
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+
+        if (!$user || !Hash::check($request->password, $user->password) && $user->status == 'deactive') {
             return response([
                 'message' => ['These credentials do not match our records.']
             ], 404);
