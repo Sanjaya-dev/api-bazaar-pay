@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\Login as LoginController;
@@ -35,4 +36,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/store/create', [StoreController::class, 'store']);
     Route::post('/store/update/{id}', [StoreController::class, 'update']);
     Route::delete('/store/delete/{id}', [StoreController::class, 'destroy']);
+    //event
+    Route::get('/event/all', [EventController::class, 'index'])->middleware('isAdmin');
+    Route::post('/event/create', [EventController::class, 'store'])->middleware('isAdmin');
+    Route::post('/event/update/{id}', [EventController::class, 'update'])->middleware('isAdmin');
+    Route::delete('/event/delete/{id}', [EventController::class, 'destroy'])->middleware('isAdmin');
 });
