@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\VendorController;
+use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\Api\Login as LoginController;
 use App\Http\Controllers\Api\Register as RegisterController;
 
@@ -39,6 +40,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //event
     Route::get('/event/all', [EventController::class, 'index'])->middleware('isAdmin');
     Route::post('/event/create', [EventController::class, 'store'])->middleware('isAdmin');
+    Route::get('/event/show/{id}', [EventController::class, 'show']);
     Route::post('/event/update/{id}', [EventController::class, 'update'])->middleware('isAdmin');
     Route::delete('/event/delete/{id}', [EventController::class, 'destroy'])->middleware('isAdmin');
+    //product
+    Route::get('/product/all', [ProductController::class, 'index']);
+    Route::post('/product/create', [ProductController::class, 'store']);
+    Route::get('/product/show/{id}', [ProductController::class, 'show']);
+    Route::post('/product/update/{id}', [ProductController::class, 'update']);
+    Route::delete('/product/delete/{id}', [ProductController::class, 'destroy']);
 });

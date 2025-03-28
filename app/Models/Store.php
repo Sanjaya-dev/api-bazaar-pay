@@ -12,6 +12,7 @@ class Store extends Model
 
      protected $fillable = [
         'vendor_id',
+        'user_id',
         'name',
         'location',
         'status'
@@ -20,5 +21,15 @@ class Store extends Model
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 }

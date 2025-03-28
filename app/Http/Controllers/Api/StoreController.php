@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Models\Store;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
@@ -34,6 +35,8 @@ class StoreController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:8',
             'location' => 'required|string',
             'vendor_id' => 'exists:vendors,id',
         ]);
@@ -42,6 +45,7 @@ class StoreController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        $vendor = null;
         if (Auth::user()->role === 'vendor') {
             $vendor = Vendor::where('user_id', Auth::id())->first();
             if (!$vendor || $vendor->id != $request->vendor_id) {
@@ -51,8 +55,18 @@ class StoreController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        // Buat user store
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => 'store',
+            'status' => 'active',
+        ]);
+
         $store = Store::create([
             'vendor_id' => $request->vendor_id ?? $vendor->id,
+            'user_id' => $user->id,
             'name' => $request->name,
             'location' => $request->location,
             'status' => 'active',
@@ -81,6 +95,7 @@ class StoreController extends Controller
     public function update(Request $request, $id)
     {
         $store = Store::find($id);
+        $user = User::find($store->user_id);
         if (!$store) {
             return response()->json(['message' => 'Store not found'], 404);
         }
@@ -93,7 +108,7 @@ class StoreController extends Controller
         } else if (Auth::user()->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-
+        $user->update($request->only(['name', 'email', 'password', 'status']));
         $store->update($request->only(['name', 'location', 'status']));
 
         return response()->json(['message' => 'Store updated successfully', 'store' => $store], 200);
@@ -102,6 +117,7 @@ class StoreController extends Controller
     public function destroy($id)
     {
         $store = Store::find($id);
+        $user = User::find($store->user_id);
         if (!$store) {
             return response()->json(['message' => 'Store not found'], 404);
         }
@@ -115,6 +131,7 @@ class StoreController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        $user->delete();
         $store->delete();
         return response()->json(['message' => 'Store deleted successfully'], 200);
     }

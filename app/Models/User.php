@@ -45,4 +45,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     
+    public function vendor()
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
+    public function store()
+    {
+        return $this->hasOne(Store::class);
+    }
 }
